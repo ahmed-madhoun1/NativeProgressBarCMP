@@ -1,22 +1,14 @@
 plugins {
-    id("com.android.library") // Ensure the Android plugin is applied
-    kotlin("multiplatform") // Kotlin Multiplatform plugin
-}
-
-android {
-    compileSdk = 33 // Use appropriate compile SDK version
-    defaultConfig {
-        minSdk = 21
-        targetSdk = 33 // Target SDK version
-    }
+    kotlin("multiplatform") version "1.8.20" // Ensure the correct Kotlin version
+    `maven-publish`
 }
 
 kotlin {
-    androidTarget() // Correctly set the Android target for Kotlin Multiplatform
+    androidTarget() // Registering Android target
 
-    // You can add other targets like JVM, iOS, etc.
-    jvm() // Example JVM target
-    iosX64() // Example iOS target (for iOS development)
+    jvm() // Example target for JVM
+    iosX64() // iOS target for X64
+    iosArm64() // iOS target for ARM64
 
     sourceSets {
         val commonMain by getting {
@@ -24,35 +16,52 @@ kotlin {
                 implementation(kotlin("stdlib-common"))
             }
         }
+
         val androidMain by getting {
             dependencies {
-                implementation("androidx.core:core-ktx:1.9.0") // Example Android dependency
+                implementation(kotlin("stdlib"))
             }
         }
-        val iosMain by getting {
+
+        val jvmMain by getting {
             dependencies {
-                // Add any iOS-specific dependencies if required
+                implementation(kotlin("stdlib-jdk8"))
+            }
+        }
+
+        val iosMain by creating {
+            dependencies {
+                implementation(kotlin("stdlib-common"))
             }
         }
     }
 }
 
-// If publishing, ensure the correct component is used
 publishing {
     publications {
         create<MavenPublication>("maven") {
-            from(components["android"]) // Reference the Android component
+            from(components["android"])
+
+            groupId = "com.example" // Change this to your group ID
+            artifactId = "mylibrary" // Change this to your artifact ID
+            version = "1.0.0" // Define your version
         }
     }
+
     repositories {
         maven {
             name = "GitHubPackages"
             url = uri("https://maven.pkg.github.com/ahmed-madhoun1/NativeProgressBarCMP") // GitHub Package URL
 
             credentials {
+                // Fetching GitHub credentials from project properties or environment variables
                 username = (project.findProperty("gpr.user") as String?) ?: System.getenv("GT_USERNAME")
                 password = (project.findProperty("gpr.token") as String?) ?: System.getenv("GT_TOKEN")
             }
         }
     }
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+    kotlinOptions.jvmTarget = "1.8"
 }
