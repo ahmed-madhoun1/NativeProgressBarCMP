@@ -13,16 +13,16 @@ android {
 }
 
 kotlin {
-    androidTarget() // Replace deprecated android() with androidTarget()
+    androidTarget() // Correctly configure the Android target
 
-    // Other targets if needed (jvm, ios, js, etc.)
-    jvm() // Example target
+    // Other targets (e.g., jvm, ios, js) can be added as needed
+    jvm() // Example for JVM target
 }
 
 publishing {
     publications {
         create<MavenPublication>("maven") {
-            from(components["android"])
+            from(components["android"]) // Ensure this references the correct component
         }
     }
 
