@@ -16,6 +16,25 @@ kotlin {
 
     // You can add other targets like JVM, iOS, etc.
     jvm() // Example JVM target
+    iosX64() // Example iOS target (for iOS development)
+
+    sourceSets {
+        val commonMain by getting {
+            dependencies {
+                implementation(kotlin("stdlib-common"))
+            }
+        }
+        val androidMain by getting {
+            dependencies {
+                implementation("androidx.core:core-ktx:1.9.0") // Example Android dependency
+            }
+        }
+        val iosMain by getting {
+            dependencies {
+                // Add any iOS-specific dependencies if required
+            }
+        }
+    }
 }
 
 // If publishing, ensure the correct component is used
