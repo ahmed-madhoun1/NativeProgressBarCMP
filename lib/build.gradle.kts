@@ -47,7 +47,7 @@ publishing {
     repositories {
         maven {
             name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/ahmed-madhoun1/NativeProgressBarCMP")
+            url = uri("https://maven.pkg.github.com/ahmed-madhoun1/NativeProgressBarCMP") // GitHub Package URL
 
             credentials {
                 username = (project.findProperty("gpr.user") as String?) ?: System.getenv("GT_USERNAME")
