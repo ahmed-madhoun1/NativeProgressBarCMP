@@ -1,87 +1,35 @@
-plugins {
-    kotlin("multiplatform") version "1.9.0" // Replace with your Kotlin version
-    id("maven-publish")
-    id("com.jfrog.bintray") version "1.8.5" apply false
-}
+name: Publish Library to GitHub Packages
 
-repositories {
-    mavenCentral()
-    google()
-}
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - sample
 
-kotlin {
-    jvm() // JVM target for Android and desktop
-    android() // Android target (optional, if you're using Android)
-    iosX64() // iOS target (optional)
-    iosArm64() // iOS target (optional)
+concurrency:
+  group: publish-library
+  cancel-in-progress: true
 
-    sourceSets {
-        val commonMain by getting {
-            dependencies {
-                implementation(kotlin("stdlib-common"))
-            }
-        }
-        val androidMain by getting {
-            dependencies {
-                implementation(kotlin("stdlib"))
-            }
-        }
-        val jvmMain by getting {
-            dependencies {
-                implementation(kotlin("stdlib"))
-            }
-        }
-    }
-}
+jobs:
+  publish-library:
+    runs-on: ubuntu-latest
 
-val isReleaseVersion = version.toString().endsWith("SNAPSHOT").not()
+    permissions:
+      contents: write
 
-publishing {
-    publications {
-        create<MavenPublication>("maven") {
-            from(components["kotlin"])
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-            groupId = "com.example"
-            artifactId = "NativeProgressBarCMP" // Your library name
-            version = "1.0.0" // Version of your library
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 17
 
-            pom {
-                name.set("NativeProgressBarCMP")
-                description.set("A Kotlin Multiplatform Native ProgressBar")
-                url.set("https://github.com/ahmed-madhoun1/NativeProgressBarCMP")
-                licenses {
-                    license {
-                        name.set("MIT License")
-                        url.set("https://opensource.org/licenses/MIT")
-                    }
-                }
-                developers {
-                    developer {
-                        id.set("ahmed-madhoun1")
-                        name.set("Ahmed Madhoun")
-                        email.set("ahmed2madhoun2@gmail.com")
-                    }
-                }
-                scm {
-                    connection.set("scm:git:git://github.com/ahmed-madhoun1/NativeProgressBarCMP.git")
-                    developerConnection.set("scm:git:ssh://github.com:ahmed-madhoun1/NativeProgressBarCMP.git")
-                    url.set("https://github.com/ahmed-madhoun1/NativeProgressBarCMP")
-                }
-            }
-        }
-    }
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
 
-    repositories {
-        maven {
-            url = uri("https://maven.pkg.github.com/ahmed-madhoun1/NativeProgressBarCMP")
-            credentials {
-                username = project.findProperty("gpr.user") ?: System.getenv("GT_USERNAME")
-                password = project.findProperty("gpr.token") ?: System.getenv("GT_TOKEN")
-            }
-        }
-    }
-}
-
-tasks.register("publishToGitHubPackages") {
-    dependsOn("publishMavenPublicationToMavenRepository")
-}
+      - name: Publish to GitHub Packages
+        run: ./gradlew publish
