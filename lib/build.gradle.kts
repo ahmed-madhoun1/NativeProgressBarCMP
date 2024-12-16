@@ -1,21 +1,22 @@
 plugins {
     id("com.android.library")
     kotlin("multiplatform")
-    id("maven-publish") // Keep this for publishing to GitHub Packages
+    id("maven-publish")
 }
 
 android {
-    compileSdkVersion(33)
+    compileSdk = 33 // Use compileSdk property instead of compileSdkVersion
     defaultConfig {
-        minSdkVersion(21)
-        targetSdkVersion(33)
+        minSdk = 21 // Use minSdk property instead of minSdkVersion
+        targetSdk = 33 // Use targetSdk property instead of targetSdkVersion
     }
 }
 
 kotlin {
-    android() // Ensure android target is created
-    jvm() // Example of another target, you can configure this as needed
-    // Add targets for iOS, JS, etc., if needed
+    androidTarget() // Replace deprecated android() with androidTarget()
+
+    // Other targets if needed (jvm, ios, js, etc.)
+    jvm() // Example target
 }
 
 publishing {
@@ -31,8 +32,8 @@ publishing {
             url = uri("https://maven.pkg.github.com/ahmed-madhoun1/NativeProgressBarCMP")
 
             credentials {
-                username = project.findProperty("gpr.user") ?: System.getenv("GT_USERNAME")
-                password = project.findProperty("gpr.token") ?: System.getenv("GT_TOKEN")
+                username = (project.findProperty("gpr.user") as String?) ?: System.getenv("GT_USERNAME")
+                password = (project.findProperty("gpr.token") as String?) ?: System.getenv("GT_TOKEN")
             }
         }
     }
