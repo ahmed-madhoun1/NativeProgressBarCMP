@@ -1,112 +1,39 @@
 plugins {
-    kotlin("multiplatform")
     id("com.android.library")
-    id("org.jetbrains.compose")
-    id("org.jetbrains.dokka")
-    id("com.vanniktech.maven.publish") // Add this plugin for publishing to Maven Central
-}
-
-kotlin {
-    androidTarget {
-        publishLibraryVariants("release")
-    }
-
-    jvm("desktop")
-
-    listOf(
-        iosX64(),
-        iosArm64(),
-        iosSimulatorArm64(),
-    ).forEach { iosTarget ->
-        iosTarget.binaries.framework {
-            baseName = "NativeProgressBarCMP"
-            isStatic = true
-        }
-    }
-
-    sourceSets {
-        val commonMain by getting {
-            dependencies {
-                implementation(compose.runtime)
-                implementation(compose.foundation)
-                implementation(compose.material)
-            }
-        }
-        val androidMain by getting {
-            dependencies {
-                // Add Android-specific dependencies if needed
-            }
-        }
-        val iosX64Main by getting
-        val iosArm64Main by getting
-        val iosSimulatorArm64Main by getting
-        val iosMain by creating {
-            dependsOn(commonMain)
-            iosX64Main.dependsOn(this)
-            iosArm64Main.dependsOn(this)
-            iosSimulatorArm64Main.dependsOn(this)
-        }
-        val desktopMain by getting {
-            dependencies {
-                // Add Desktop-specific dependencies if needed
-            }
-        }
-    }
+    kotlin("multiplatform")
+    id("maven-publish") // Keep this for publishing to GitHub Packages
 }
 
 android {
-    compileSdk = (findProperty("android.compileSdk") as String).toInt()
-    namespace = "com.am.nativeprogressindicator"
-
-    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
-    sourceSets["main"].res.srcDirs("src/androidMain/res")
-    sourceSets["main"].resources.srcDirs("src/commonMain/resources")
-
+    compileSdkVersion(33)
     defaultConfig {
-        minSdk = (findProperty("android.minSdk") as String).toInt()
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-    kotlin {
-        jvmToolchain(17)
+        minSdkVersion(21)
+        targetSdkVersion(33)
     }
 }
 
-mavenPublishing {
-    // Publish to Maven Central (Sonatype OSS)
-    publishToMavenCentral(SonatypeHost.S01, automaticRelease = true)
-    signAllPublications()
+kotlin {
+    android() // Ensure android target is created
+    jvm() // Example of another target, you can configure this as needed
+    // Add targets for iOS, JS, etc., if needed
+}
 
-    coordinates("com.am", "NativeProgressBarCMP", "1.0.0") // Group ID, Artifact ID, Version
-
-    pom {
-        name.set("NativeProgressBarCMP")
-        description.set("A Kotlin Multiplatform library for showing a native-style progress bar for Android and iOS.")
-        inceptionYear.set("2023")
-        url.set("https://github.com/AhmedMadhoun/NativeProgressBarCMP")
-
-        licenses {
-            license {
-                name.set("The Apache License, Version 2.0")
-                url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
-                distribution.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
-            }
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            from(components["android"])
         }
+    }
 
-        developers {
-            developer {
-                id.set("AhmedMadhoun")
-                name.set("Ahmed Madhoun")
-                url.set("https://github.com/AhmedMadhoun")
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/ahmed-madhoun1/NativeProgressBarCMP")
+
+            credentials {
+                username = project.findProperty("gpr.user") ?: System.getenv("GT_USERNAME")
+                password = project.findProperty("gpr.token") ?: System.getenv("GT_TOKEN")
             }
-        }
-
-        scm {
-            url.set("https://github.com/AhmedMadhoun/NativeProgressBarCMP")
-            connection.set("scm:git:git://github.com/AhmedMadhoun/NativeProgressBarCMP.git")
-            developerConnection.set("scm:git:ssh://git@github.com/AhmedMadhoun/NativeProgressBarCMP.git")
         }
     }
 }
