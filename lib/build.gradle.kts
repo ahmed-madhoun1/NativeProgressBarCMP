@@ -1,11 +1,9 @@
-import com.vanniktech.maven.publish.SonatypeHost
-
 plugins {
     kotlin("multiplatform")
     id("com.android.library")
     id("org.jetbrains.compose")
     id("org.jetbrains.dokka")
-    id("com.vanniktech.maven.publish")
+    id("com.vanniktech.maven.publish") // For publishing the library
 }
 
 kotlin {
@@ -21,7 +19,7 @@ kotlin {
         iosSimulatorArm64(),
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
-            baseName = "lib"
+            baseName = "NativeProgressBarCMP"
             isStatic = true
         }
     }
@@ -36,6 +34,7 @@ kotlin {
         }
         val androidMain by getting {
             dependencies {
+                // Add Android-specific dependencies if needed
             }
         }
         val iosX64Main by getting
@@ -49,6 +48,7 @@ kotlin {
         }
         val desktopMain by getting {
             dependencies {
+                // Add Desktop-specific dependencies if needed
             }
         }
     }
@@ -56,7 +56,7 @@ kotlin {
 
 android {
     compileSdk = (findProperty("android.compileSdk") as String).toInt()
-    namespace = "com.myapplication.common"
+    namespace = "com.am.nativeprogressindicator"
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     sourceSets["main"].res.srcDirs("src/androidMain/res")
@@ -75,17 +75,18 @@ android {
 }
 
 mavenPublishing {
-//    publishToMavenCentral(SonatypeHost.DEFAULT)
-    // or when publishing to https://s01.oss.sonatype.org
+    // Publish to Maven Central (Sonatype OSS)
     publishToMavenCentral(SonatypeHost.S01, automaticRelease = true)
     signAllPublications()
-    coordinates("com.example.mylibrary", "mylibrary-runtime", "1.0.0")
+    
+    coordinates("com.am", "NativeProgressBarCMP", "1.0.0") // Group ID, Artifact ID, Version
 
     pom {
-        name.set(project.name)
-        description.set("A description of what my library does.")
+        name.set("NativeProgressBarCMP")
+        description.set("A Kotlin Multiplatform library for showing a native-style progress bar for Android and iOS.")
         inceptionYear.set("2023")
-        url.set("https://github.com/username/mylibrary/")
+        url.set("https://github.com/AhmedMadhoun/NativeProgressBarCMP")
+        
         licenses {
             license {
                 name.set("The Apache License, Version 2.0")
@@ -93,17 +94,19 @@ mavenPublishing {
                 distribution.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
             }
         }
+        
         developers {
             developer {
-                id.set("username")
-                name.set("User Name")
-                url.set("https://github.com/username/")
+                id.set("AhmedMadhoun")
+                name.set("Ahmed Madhoun")
+                url.set("https://github.com/AhmedMadhoun")
             }
         }
+        
         scm {
-            url.set("https://github.com/username/mylibrary/")
-            connection.set("scm:git:git://github.com/username/mylibrary.git")
-            developerConnection.set("scm:git:ssh://git@github.com/username/mylibrary.git")
+            url.set("https://github.com/AhmedMadhoun/NativeProgressBarCMP")
+            connection.set("scm:git:git://github.com/AhmedMadhoun/NativeProgressBarCMP.git")
+            developerConnection.set("scm:git:ssh://git@github.com/AhmedMadhoun/NativeProgressBarCMP.git")
         }
     }
 }
