@@ -22,4 +22,4 @@ jobs:
           java-version: '17'
       - name: Build Multiplatform project
         shell: bash
-        run: ./gradlew assemble
+        run: ./gradlew assemble  # Changed to 'assemble' instead of 'publish'
