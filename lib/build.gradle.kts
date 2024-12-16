@@ -3,7 +3,7 @@ plugins {
     id("com.android.library")
     id("org.jetbrains.compose")
     id("org.jetbrains.dokka")
-    id("com.vanniktech.maven.publish") // For publishing the library
+    id("com.vanniktech.maven.publish") // Add this plugin for publishing to Maven Central
 }
 
 kotlin {
@@ -78,7 +78,7 @@ mavenPublishing {
     // Publish to Maven Central (Sonatype OSS)
     publishToMavenCentral(SonatypeHost.S01, automaticRelease = true)
     signAllPublications()
-    
+
     coordinates("com.am", "NativeProgressBarCMP", "1.0.0") // Group ID, Artifact ID, Version
 
     pom {
@@ -86,7 +86,7 @@ mavenPublishing {
         description.set("A Kotlin Multiplatform library for showing a native-style progress bar for Android and iOS.")
         inceptionYear.set("2023")
         url.set("https://github.com/AhmedMadhoun/NativeProgressBarCMP")
-        
+
         licenses {
             license {
                 name.set("The Apache License, Version 2.0")
@@ -94,7 +94,7 @@ mavenPublishing {
                 distribution.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
             }
         }
-        
+
         developers {
             developer {
                 id.set("AhmedMadhoun")
@@ -102,7 +102,7 @@ mavenPublishing {
                 url.set("https://github.com/AhmedMadhoun")
             }
         }
-        
+
         scm {
             url.set("https://github.com/AhmedMadhoun/NativeProgressBarCMP")
             connection.set("scm:git:git://github.com/AhmedMadhoun/NativeProgressBarCMP.git")
