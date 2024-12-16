@@ -1,4 +1,5 @@
 name: Publish Wiki
+
 on:
   push:
     branches:
@@ -15,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-      contents: write
+      contents: write  # Required for pushing the wiki
 
     steps:
       - name: Checkout repository
@@ -41,3 +42,24 @@ jobs:
           folder: ./build/dokka/htmlMultiModule
           branch: gh-pages
           force: true
+
+  publish-library:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write  # Required for publishing the library to GitHub Packages
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+
+      - name: Set up Gradle
+        uses: gradle/gradle-build-action@v2
+
+      - name: Publish to GitHub Packages
+        run: ./gradlew publish
+        env:
+          GPR_USER: ${{ secrets.GT_USERNAME }}  # GitHub username from secrets
+          GPR_TOKEN: ${{ secrets.GT_TOKEN }}    # GitHub token from secrets
